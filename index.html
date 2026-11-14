@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Accesso riservato</title>
+<style>
+  :root { --red:#d81a1f; --yellow:#ffcc0d; --bg:#140a18; --card:#22122a; --text:#fff3e6; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:radial-gradient(circle at 50% 0%, #3a1630, var(--bg) 70%); color:var(--text);
+         font:16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; display:flex; flex-direction:column; align-items:center; }
+  header { width:100%; background:var(--red); border-bottom:6px solid var(--yellow); padding:22px 16px; text-align:center; }
+  header h1 { margin:0; font-size:clamp(34px, 8vw, 58px); letter-spacing:2px; font-weight:900; text-shadow:4px 4px 0 rgba(0,0,0,.45); }
+  header p { margin:4px 0 0; color:var(--yellow); font-weight:700; letter-spacing:3px; font-size:14px; }
+  main { width:100%; max-width:520px; padding:28px 16px 48px; }
+  .card { background:var(--card); border:2px solid #4a2a50; border-radius:14px; padding:24px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+  h2 { margin:0 0 6px; font-size:22px; color:var(--yellow); }
+  .muted { color:#cdbfcf; font-size:14px; margin:0 0 16px; }
+  input { width:100%; padding:14px; font-size:18px; border-radius:10px; border:2px solid #5a3a60; background:#120814; color:#fff; letter-spacing:2px; }
+  input:focus { outline:none; border-color:var(--yellow); }
+  button { width:100%; margin-top:12px; padding:14px; font-size:18px; font-weight:800; border:0; border-radius:10px; cursor:pointer;
+           background:var(--red); color:#fff; box-shadow:0 4px 0 #7a0c10; }
+  button:hover { filter:brightness(1.1); }
+  button:disabled { opacity:.6; cursor:wait; }
+  .err { color:#ff8a8a; min-height:22px; margin:10px 0 0; font-size:14px; }
+  ol { padding-left:20px; margin:16px 0 0; } li { margin:6px 0; }
+  .bar { height:10px; background:#120814; border-radius:6px; overflow:hidden; margin-top:12px; display:none; }
+  .bar div { height:100%; width:0; background:var(--yellow); transition:width .2s; }
+  .hidden { display:none; }
+  footer { color:#8f7f92; font-size:12px; text-align:center; padding:0 16px 24px; }
+</style>
+</head>
+<body>
+<header><h1>SONIC 4</h1><p>EPISODE III · ACCESSO RISERVATO</p></header>
+<main>
+  <section class="card" id="lock">
+    <h2>Pagina privata</h2>
+    <p class="muted">Scrivi il codice d'accesso che ti ha dato chi ti ha invitato.</p>
+    <form id="f"><input id="pw" type="password" autocomplete="current-password" placeholder="codice d'accesso" autofocus>
+    <button id="go" type="submit">ENTRA</button></form>
+    <p class="err" id="err"></p>
+  </section>
+  <section class="card hidden" id="open">
+    <h2>Benvenuto!</h2>
+    <p class="muted" id="ver"></p>
+    <button id="dl">SCARICA IL LAUNCHER</button>
+    <div class="bar" id="bar"><div></div></div>
+    <p class="err" id="err2"></p>
+    <ol>
+      <li>Estrai lo zip in una cartella (es. Documenti\Knuckles4).</li>
+      <li>Apri <b>Knuckles4Launcher.exe</b>. Se Windows avvisa, premi "Ulteriori informazioni" e poi "Esegui comunque".</li>
+      <li>Alla prima apertura il launcher chiede il <b>codice d'accesso</b>: è lo stesso che hai scritto qui.</li>
+      <li>Premi <b>INSTALLA</b>, poi <b>GIOCA</b>. Gli aggiornamenti dopo scaricano solo le parti nuove.</li>
+    </ol>
+  </section>
+</main>
+<footer>Gioco amatoriale non ufficiale, privato e gratuito.</footer>
+<script>
+const SALT = "w3/xiVBwKQmkY2/ut3kQ9Q==", ITER = 600000, PAYLOAD = "BOQa2lc+38JGdRbEnITlMctS/TxRwVFqTZ+C1Kt17zFixdepMlKWSSoYFwa7r2qV7EgsqAWc6rX85kRdc+r3rxjn";
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+let KEY = null;
+async function keyFor(pw) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(SALT), iterations:ITER, hash:"SHA-256"}, base,
+    {name:"AES-GCM", length:256}, false, ["decrypt"]);
+}
+async function dec(key, bytes) {
+  return new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM", iv:bytes.slice(0,12)}, key, bytes.slice(12)));
+}
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const go = document.getElementById("go"), err = document.getElementById("err");
+  const pw = document.getElementById("pw").value.trim().toUpperCase();
+  if (!pw) return;
+  go.disabled = true; err.textContent = "Controllo...";
+  try {
+    const key = await keyFor(pw);
+    const info = JSON.parse(new TextDecoder().decode(await dec(key, b64(PAYLOAD))));
+    KEY = key;
+    document.getElementById("ver").textContent = info.version ? "Launcher versione " + info.version : "";
+    document.getElementById("lock").classList.add("hidden");
+    document.getElementById("open").classList.remove("hidden");
+  } catch (_) {
+    err.textContent = "Codice sbagliato.";
+  }
+  go.disabled = false;
+});
+document.getElementById("dl").addEventListener("click", async () => {
+  const btn = document.getElementById("dl"), err = document.getElementById("err2");
+  const bar = document.getElementById("bar"), fill = bar.firstElementChild;
+  btn.disabled = true; err.textContent = ""; bar.style.display = "block";
+  try {
+    const r = await fetch("launcher.bin", {cache:"no-store"});
+    if (!r.ok) throw new Error("download");
+    const total = +r.headers.get("content-length") || 0;
+    const rd = r.body.getReader(); const parts = []; let got = 0;
+    for (;;) { const {done, value} = await rd.read(); if (done) break; parts.push(value); got += value.length;
+      if (total) fill.style.width = (100 * got / total).toFixed(1) + "%"; }
+    const all = new Uint8Array(got); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
+    const zip = await dec(KEY, all);
+    fill.style.width = "100%";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([zip], {type:"application/zip"}));
+    a.download = "Knuckles4Launcher.zip"; document.body.appendChild(a); a.click(); a.remove();
+  } catch (_) {
+    err.textContent = "Download non riuscito, riprova.";
+  }
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>
