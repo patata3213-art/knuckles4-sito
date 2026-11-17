@@ -42,15 +42,15 @@ Due tipi di cifratura:
 
 Prima chiedi l'ok a Sonic. Mai patch senza il suo ok.
 
-1. Parti dal sorgente giusto (l'ultimo approvato da Sonic; oggi `knuckles4/sorgente/knuckles4_0.7.8.bundle`, ramo `v071`, che va sopra `knuckles4_0.7.0_pubblica.bundle`).
-   Alza la versione in `version.json` e in `project.godot` (`config/version`), es. 0.7.9.
+1. Parti dal sorgente giusto (l'ultimo approvato da Sonic; oggi `knuckles4/sorgente/knuckles4_0.7.11.bundle`, ramo `v0711`, che va sopra `knuckles4_0.7.0_pubblica.bundle`).
+   Alza la versione in `version.json` e in `project.godot` (`config/version`), es. 0.7.12.
 2. Esporta con Godot 4.3 e crea la patch `.pck` con `tools/make_patch.py` (solo i file cambiati, sotto 100 MB).
-3. Cifra la patch: `patches/0.7.9.pck` -> `patches/0.7.9.pck.k4` (vedi sopra).
-4. Ramo `gioco`: aggiungi `patches/0.7.9.pck.k4`; in `version.json` cambia `"version"`,
-   aggiungi `{"version": "0.7.9", "file": "patches/0.7.9.pck.k4"}` in fondo a `"patches"`, scrivi `"notes"`.
+3. Cifra la patch: `patches/0.7.12.pck` -> `patches/0.7.12.pck.k4` (vedi sopra).
+4. Ramo `gioco`: aggiungi `patches/0.7.12.pck.k4`; in `version.json` cambia `"version"`,
+   aggiungi `{"version": "0.7.12", "file": "patches/0.7.12.pck.k4"}` in fondo a `"patches"`, scrivi `"notes"`.
    Non toccare `base`, `runtime`, `exe`, `pck`. Commit e push.
 5. (Facoltativo) per mostrare la versione nuova sul sito va rifatto il `PAYLOAD` in `index.html`
-   (stessa password e stesso SALT): `{"version":"0.7.9","base":"0.7.0","patches":["0.7.1","0.7.2","0.7.3","0.7.4","0.7.5","0.7.6","0.7.7","0.7.8","0.7.9"]}`.
+   (stessa password e stesso SALT): `{"version":"0.7.12","base":"0.7.0","patches":["0.7.1","0.7.2","0.7.3","0.7.4","0.7.5","0.7.6","0.7.7","0.7.8","0.7.9","0.7.10","0.7.11","0.7.12"]}`.
 
 ## 4. Cambiare il sito
 
