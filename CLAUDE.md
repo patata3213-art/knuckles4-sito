@@ -42,15 +42,15 @@ Due tipi di cifratura:
 
 Prima chiedi l'ok a Sonic. Mai patch senza il suo ok.
 
-1. Parti dal sorgente giusto (l'ultimo approvato da Sonic; oggi `knuckles4/sorgente/knuckles4_0.7.23.bundle`, ramo `v0723`, che va sopra `knuckles4_0.7.0_pubblica.bundle`).
-   Alza la versione in `version.json` e in `project.godot` (`config/version`), es. 0.7.24.
+1. Parti dal sorgente giusto (l'ultimo approvato da Sonic; oggi `knuckles4/sorgente/knuckles4_0.7.26_completo.bundle`, ramo `v0726`, che va sopra `knuckles4_0.7.0_pubblica.bundle`).
+   Alza la versione in `version.json` e in `project.godot` (`config/version`), es. 0.7.27.
 2. Esporta con Godot 4.3 e crea la patch `.pck` con `tools/make_patch.py` (solo i file cambiati, sotto 100 MB).
-3. Cifra la patch: `patches/0.7.24.pck` -> `patches/0.7.24.pck.k4` (vedi sopra).
-4. Ramo `gioco`: aggiungi `patches/0.7.24.pck.k4`; in `version.json` cambia `"version"`,
-   aggiungi `{"version": "0.7.24", "file": "patches/0.7.24.pck.k4"}` in fondo a `"patches"`, scrivi `"notes"`.
+3. Cifra la patch: `patches/0.7.27.pck` -> `patches/0.7.27.pck.k4` (vedi sopra).
+4. Ramo `gioco`: aggiungi `patches/0.7.27.pck.k4`; in `version.json` cambia `"version"`,
+   aggiungi `{"version": "0.7.27", "file": "patches/0.7.27.pck.k4"}` in fondo a `"patches"`, scrivi `"notes"`.
    Non toccare `base`, `runtime`, `exe`, `pck`. Commit e push.
 5. (Facoltativo) per mostrare la versione nuova sul sito va rifatto il `PAYLOAD` in `index.html`
-   (stessa password e stesso SALT): `{"version":"0.7.24","base":"0.7.0","patches":["0.7.1","0.7.2","0.7.3","0.7.4","0.7.5","0.7.6","0.7.7","0.7.8","0.7.9","0.7.10","0.7.11","0.7.12","0.7.13","0.7.14","0.7.15","0.7.16","0.7.17","0.7.18","0.7.19","0.7.20","0.7.21","0.7.22","0.7.23","0.7.24"]}`.
+   (stessa password e stesso SALT; le 0.7.24 e 0.7.25 non esistono da sole, sono dentro la 0.7.26): `{"version":"0.7.27","base":"0.7.0","patches":["0.7.1","0.7.2","0.7.3","0.7.4","0.7.5","0.7.6","0.7.7","0.7.8","0.7.9","0.7.10","0.7.11","0.7.12","0.7.13","0.7.14","0.7.15","0.7.16","0.7.17","0.7.18","0.7.19","0.7.20","0.7.21","0.7.22","0.7.23","0.7.26","0.7.27"]}`.
 
 ## 4. Cambiare il sito
 
